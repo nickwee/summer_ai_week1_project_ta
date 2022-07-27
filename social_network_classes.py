@@ -19,20 +19,77 @@ class SocialNetwork:
 
     def  create_account(self):
         #implement function that creates account here
-        print("Creating ...")
+        username = input("Please enter your username: ")
+        age = input("Enter your age: ")
+        user = Person(username, age)
+        self.list_of_people.append(user)
+        print("Account successfully created: " + "\nUsername: " + username + "\nAge: " + age)
         pass
+
+    def getCurrentUser(self, username):
+        for user in self.list_of_people:
+            if user.username == username:
+                return user
 
 
 class Person:
     def __init__(self, name, age):
-        self.id = name
-        self.year = age
+        self.username = name
+        self.age = age
         self.friendlist = []
+        self.inbox = []
 
-    def add_friend(self, person_object):
+    def setName(self, name):
+        self.username = name
+    
+    def setAge(self, age):
+        self.age = age
+    
+    def editProfile(self, editDetailsChoice):
+        while True:
+            if editDetailsChoice == "1":
+                newUsername = input("Please enter your new username: ")
+                self.setName(newUsername)
+            elif editDetailsChoice == "2":
+                newAge = input("Please enter your new age: ")
+                self.setAge(newAge)
+
+    def add_friend(self, friendName, ai_social_network):
         #implement adding friend. Hint add to self.friendlist
-        pass
+        friend = None
+        if any(user.username == friendName for user in ai_social_network.list_of_people):
+            friend = ai_social_network.getCurrentUser(friendName)
+            if (friend not in self.friendlist):
+                self.friendlist.append(friend)
+                print("You have added " + friendName + " as a friend! ")
+            else:
+                print(friendName + " is already on your friend list! ")
+        else:
+            print("User does not exist. ")
+    
+    def viewFriendList(self):
+        print("*********** " + self.username + "'s Friend List ***********")
+        for friend in self.friendlist:
+            username = friend.username
+            print(username)
 
-    def send_message(self):
-        #implement sending message to friend here
-        pass
+    def blockFriend(self, blockedFriendName, ai_social_network):
+        if any(user.username == blockedFriendName for user in self.friendlist):
+            blockedFriend = ai_social_network.getCurrentUser(blockedFriendName)
+            self.friendlist.remove(blockedFriend)
+            print("You have blocked " + blockedFriendName)
+        else:
+            print("User is not on your friend list. ")
+
+    def sendMessage(self, friendName, ai_social_network):
+        if any(user.username == friendName for user in self.friendlist):
+            friend = ai_social_network.getCurrentUser(friendName)
+            message = input("Type your message: ")
+            friend.inbox.append(message)
+            print("You have sent " + message + " to " + friendName)
+        else:
+            print("User is not on your friend list. ")
+    
+    def viewMessages(self):
+        print("*********** " + self.username + "'s Message Inbox ***********")
+        print(*self.inbox, sep = "\n")
